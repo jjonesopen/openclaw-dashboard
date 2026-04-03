@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>System Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Dashboard</h2>
+        <ul>
+            <li><a href="#">System Stats</a></li>
+            <li><a href="#">Status</a></li>
+            <li><a href="#">Task History</a></li>
+            <li><a href="#">Gateway Status</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <h1>System Dashboard</h1>
+        <div id="system-stats">
+            <h2>System Stats</h2>
+            <p>CPU Usage: <span id="cpu">--</span>%</p>
+            <p>Memory Usage: <span id="memory">--</span>MB</p>
+            <p>Disk Space: <span id="disk">--</span>GB</p>
+            <p>GPU Usage: <span id="gpu">--</span>%</p>
+        </div>
+        <div id="status">
+            <h2>Status</h2>
+            <p id="status-text">--</p>
+        </div>
+        <div id="task-history">
+            <h2>Recent Task History</h2>
+            <ul id="task-list"></ul>
+        </div>
+        <div id="gateway-status">
+            <h2>OpenClaw Gateway Status</h2>
+            <p id="gateway-text">--</p>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

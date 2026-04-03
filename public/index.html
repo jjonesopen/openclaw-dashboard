@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenClaw Mission Control</title>
+  <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+  <!-- ── Header ─────────────────────────────────────────────── -->
+  <header id="header">
+    <div class="header-left">
+      <span class="logo">🦞</span>
+      <h1>OpenClaw Mission Control</h1>
+    </div>
+    <div class="header-right">
+      <span id="connection-status" class="status-badge offline">Connecting…</span>
+      <span id="clock"></span>
+    </div>
+  </header>
+
+  <!-- ── Hero Cards ─────────────────────────────────────────── -->
+  <section id="hero" class="card-row">
+    <div class="hero-card" id="hero-uptime">
+      <div class="hero-label">System Uptime</div>
+      <div class="hero-value" id="val-uptime">--</div>
+    </div>
+    <div class="hero-card" id="hero-cpu">
+      <div class="hero-label">CPU Usage</div>
+      <div class="hero-value" id="val-cpu">--%</div>
+    </div>
+    <div class="hero-card" id="hero-ram">
+      <div class="hero-label">RAM Usage</div>
+      <div class="hero-value" id="val-ram">--%</div>
+    </div>
+    <div class="hero-card" id="hero-gpu">
+      <div class="hero-label">GPU / VRAM</div>
+      <div class="hero-value" id="val-gpu">--</div>
+    </div>
+    <div class="hero-card" id="hero-models">
+      <div class="hero-label">Models Loaded</div>
+      <div class="hero-value" id="val-models">--</div>
+    </div>
+    <div class="hero-card" id="hero-gateway">
+      <div class="hero-label">Gateway</div>
+      <div class="hero-value" id="val-gateway">--</div>
+    </div>
+  </section>
+
+  <!-- ── Main Grid ──────────────────────────────────────────── -->
+  <main id="grid">
+
+    <!-- System Vitals -->
+    <section class="panel" id="panel-vitals">
+      <h2>System Vitals</h2>
+      <div class="panel-body">
+        <div class="vital-row">
+          <span class="vital-label">CPU</span>
+          <div class="bar-track"><div class="bar-fill cpu-bar" id="bar-cpu"></div></div>
+          <span class="vital-pct" id="pct-cpu">0%</span>
+        </div>
+        <div class="vital-row">
+          <span class="vital-label">RAM</span>
+          <div class="bar-track"><div class="bar-fill ram-bar" id="bar-ram"></div></div>
+          <span class="vital-pct" id="pct-ram">0%</span>
+        </div>
+        <div class="vital-row">
+          <span class="vital-label">Disk</span>
+          <div class="bar-track"><div class="bar-fill disk-bar" id="bar-disk"></div></div>
+          <span class="vital-pct" id="pct-disk">0%</span>
+        </div>
+        <div class="vital-row">
+          <span class="vital-label">VRAM</span>
+          <div class="bar-track"><div class="bar-fill vram-bar" id="bar-vram"></div></div>
+          <span class="vital-pct" id="pct-vram">0%</span>
+        </div>
+        <div id="vitals-detail" class="vitals-detail"></div>
+      </div>
+    </section>
+
+    <!-- GPU Panel -->
+    <section class="panel" id="panel-gpu">
+      <h2>GPU Status</h2>
+      <div class="panel-body">
+        <div id="gpu-info" class="info-grid">
+          <span class="dim">Waiting for data…</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Services Status -->
+    <section class="panel" id="panel-services">
+      <h2>Services</h2>
+      <div class="panel-body" id="services-list">
+        <span class="dim">Loading…</span>
+      </div>
+    </section>
+
+    <!-- Ollama Models -->
+    <section class="panel" id="panel-ollama">
+      <h2>Ollama Models</h2>
+      <div class="panel-body" id="ollama-models">
+        <span class="dim">Loading…</span>
+      </div>
+    </section>
+
+    <!-- Channels -->
+    <section class="panel" id="panel-channels">
+      <h2>Channels</h2>
+      <div class="panel-body" id="channels-list">
+        <span class="dim">Loading…</span>
+      </div>
+    </section>
+
+    <!-- Connected Tools -->
+    <section class="panel" id="panel-tools">
+      <h2>Tools & Skills</h2>
+      <div class="panel-body" id="tools-list">
+        <span class="dim">Loading…</span>
+      </div>
+    </section>
+
+    <!-- Agents -->
+    <section class="panel" id="panel-agents">
+      <h2>Agents</h2>
+      <div class="panel-body" id="agents-list">
+        <span class="dim">Loading…</span>
+      </div>
+    </section>
+
+    <!-- Active Sessions -->
+    <section class="panel" id="panel-sessions">
+      <h2>Active Sessions</h2>
+      <div class="panel-body" id="sessions-list">
+        <span class="dim">Loading…</span>
+      </div>
+    </section>
+
+    <!-- Memory Browser -->
+    <section class="panel" id="panel-memory">
+      <h2>Memory Files</h2>
+      <div class="panel-body" id="memory-list">
+        <span class="dim">Loading…</span>
+      </div>
+    </section>
+
+    <!-- Recent Logs -->
+    <section class="panel" id="panel-logs">
+      <h2>Recent Logs</h2>
+      <div class="panel-body" id="logs-list">
+        <span class="dim">Loading…</span>
+      </div>
+    </section>
+
+    <!-- Workspace -->
+    <section class="panel" id="panel-workspace">
+      <h2>Workspace</h2>
+      <div class="panel-body" id="workspace-dirs">
+        <span class="dim">Loading…</span>
+      </div>
+    </section>
+
+    <!-- Placeholder: Future Skills -->
+    <section class="panel placeholder" id="panel-future">
+      <h2>Coming Soon</h2>
+      <div class="panel-body">
+        <div class="future-item">📦 Etsy Integration</div>
+        <div class="future-item">🏷️ Label Printing</div>
+        <div class="future-item">📋 Order Tracking</div>
+        <div class="future-item">💰 Cost / Electricity Monitor</div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── Footer ─────────────────────────────────────────────── -->
+  <footer>
+    <span>OpenClaw Mission Control v1.0</span>
+    <span id="last-update">Last update: never</span>
+  </footer>
+
+  <script src="/js/dashboard.js" type="module"></script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+[Unit]
+Description=OpenClaw Mission Control Dashboard
+After=network.target ollama.service
+Wants=ollama.service
+
+[Service]
+Type=simple
+User=jjones
+Group=jjones
+WorkingDirectory=/home/jjones/dashboard
+ExecStart=/usr/bin/node /home/jjones/dashboard/server.js
+Restart=on-failure
+RestartSec=5
+Environment=NODE_ENV=production
+Environment=DASHBOARD_PORT=8080
+Environment=DASHBOARD_HOST=0.0.0.0
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=openclaw-dashboard
+
+[Install]
+WantedBy=multi-user.target
