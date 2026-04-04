@@ -78,7 +78,6 @@ function connect() {
     $('connection-status').textContent = 'Disconnected';
     $('connection-status').className = 'status-badge offline';
     evtSource.close();
-    // Reconnect after 5s
     clearTimeout(reconnectTimer);
     reconnectTimer = setTimeout(connect, 5000);
   };
@@ -104,6 +103,7 @@ function render(state) {
   renderWorkspace(state.gateway?.workspaceDirs);
   renderActiveTasks(state.tasks);
   renderTelegram(state.telegram);
+  renderEtsy(state.etsy);
 
   $('last-update').textContent = 'Last update: ' + new Date().toLocaleTimeString();
 }
@@ -193,7 +193,6 @@ function renderServices(services) {
 
   let html = '';
 
-  // Systemd services
   const sd = services.systemd || {};
   for (const [key, svc] of Object.entries(sd)) {
     const active = svc.active;
@@ -207,7 +206,6 @@ function renderServices(services) {
     `;
   }
 
-  // External services
   const ext = services.external || {};
   if (ext.gog) {
     const ok = ext.gog.available;
@@ -241,10 +239,7 @@ function renderOllama(ollama) {
     return;
   }
 
-  let html = '';
-
-  // Header with version
-  html += `<div style="margin-bottom:10px;font-size:11px;color:var(--text-dim)">Ollama v${ollama.version || '?'} — ${ollama.modelCount} model${ollama.modelCount !== 1 ? 's' : ''}</div>`;
+  let html = `<div class="dim" style="margin-bottom:8px">Ollama v${ollama.version} — ${ollama.modelCount} models</div>`;
 
   const runningNames = new Set((ollama.running || []).map(m => m.name));
 
@@ -403,7 +398,6 @@ function renderActiveTasks(tasks) {
 
   let html = '';
 
-  // Current tasks
   if (tasks.current && tasks.current.length > 0) {
     html += '<div class="task-section"><h4>🔄 Currently Running</h4>';
     tasks.current.forEach(task => {
@@ -419,7 +413,6 @@ function renderActiveTasks(tasks) {
     html += '</div>';
   }
 
-  // Recent work
   if (tasks.recent && tasks.recent.length > 0) {
     html += '<div class="task-section"><h4>📝 Recent Activity</h4>';
     tasks.recent.forEach(work => {
@@ -451,7 +444,6 @@ function renderTelegram(telegram) {
     const timeAgo = formatTimeAgo(new Date(msg.timestamp));
     const source = msg.source === 'log' ? '📋' : '🧠';
     const truncated = msg.content.length > 80 ? msg.content.substring(0, 80) + '...' : msg.content;
-    
     html += `
       <div class="file-item">
         <span class="file-name">${source} ${truncated}</span>
@@ -463,12 +455,63 @@ function renderTelegram(telegram) {
   el.innerHTML = html;
 }
 
+// ── Etsy Shop ────────────────────────────────────────────────
+function renderEtsy(etsy) {
+  const el = $('etsy-content');
+  if (!el || !etsy) return;
+
+  const liveBadge = etsy.live
+    ? '<span class="model-tag loaded">● LIVE</span>'
+    : '<span class="model-tag available">MOCK DATA</span>';
+
+  const shopStatus = etsy.shop?.status === 'open'
+    ? '<span class="dot green"></span> Open'
+    : '<span class="dot red"></span> Closed';
+
+  el.innerHTML = `
+    <div class="info-item">
+      <span class="label">Shop</span>
+      <span class="value">${etsy.shop?.name || '--'} ${liveBadge}</span>
+    </div>
+    <div class="info-item">
+      <span class="label">Status</span>
+      <span class="value">${shopStatus}</span>
+    </div>
+    <div class="info-item">
+      <span class="label">Orders Today</span>
+      <span class="value" style="color:var(--green)">${etsy.orders?.todayCount ?? '--'}</span>
+    </div>
+    <div class="info-item">
+      <span class="label">Orders This Month</span>
+      <span class="value">${etsy.orders?.monthCount ?? '--'}</span>
+    </div>
+    <div class="info-item">
+      <span class="label">Pending Action</span>
+      <span class="value" style="color:${etsy.orders?.pending > 0 ? 'var(--yellow)' : 'var(--green)'}">
+        ${etsy.orders?.pending ?? '--'}
+      </span>
+    </div>
+    <div class="info-item">
+      <span class="label">Revenue Today</span>
+      <span class="value" style="color:var(--green)">$${etsy.revenue?.today?.toFixed(2) ?? '--'}</span>
+    </div>
+    <div class="info-item">
+      <span class="label">Revenue This Month</span>
+      <span class="value" style="color:var(--green)">$${etsy.revenue?.month?.toFixed(2) ?? '--'}</span>
+    </div>
+    <div class="info-item">
+      <span class="label">Top Item</span>
+      <span class="value">${etsy.topItem?.name ?? '--'} ${etsy.topItem?.sold ? '(' + etsy.topItem.sold + ' sold)' : ''}</span>
+    </div>
+  `;
+}
+
 // ── Helper Functions ─────────────────────────────────────────
 function formatDuration(ms) {
   const seconds = Math.floor(ms / 1000);
   const minutes = Math.floor(seconds / 60);
   const hours = Math.floor(minutes / 60);
-  
+
   if (hours > 0) return `${hours}h ${minutes % 60}m`;
   if (minutes > 0) return `${minutes}m ${seconds % 60}s`;
   return `${seconds}s`;
@@ -481,7 +524,7 @@ function formatTimeAgo(timestamp) {
   const minutes = Math.floor(seconds / 60);
   const hours = Math.floor(minutes / 60);
   const days = Math.floor(hours / 24);
-  
+
   if (days > 0) return `${days}d ago`;
   if (hours > 0) return `${hours}h ago`;
   if (minutes > 0) return `${minutes}m ago`;
