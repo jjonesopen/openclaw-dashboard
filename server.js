@@ -14,6 +14,8 @@ import { collectMetrics } from './lib/metrics.js';
 import { getOllamaState } from './lib/ollama.js';
 import { getGatewayState } from './lib/gateway.js';
 import { getServiceStatus } from './lib/services.js';
+import { getActiveTasks } from './lib/tasks.js';
+import { getTelegramMessages } from './lib/telegram.js';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const PUBLIC = join(__dirname, 'public');
@@ -36,11 +38,13 @@ let stateTimestamp = 0;
 
 async function refreshState() {
   try {
-    const [metrics, ollama, gateway, services] = await Promise.all([
+    const [metrics, ollama, gateway, services, tasks, telegram] = await Promise.all([
       collectMetrics(),
       getOllamaState(),
       getGatewayState(),
       getServiceStatus(),
+      getActiveTasks(),
+      getTelegramMessages(),
     ]);
 
     cachedState = {
@@ -49,6 +53,8 @@ async function refreshState() {
       ollama,
       gateway,
       services,
+      tasks,
+      telegram,
     };
     stateTimestamp = Date.now();
   } catch (err) {
@@ -117,6 +123,18 @@ const server = http.createServer(async (req, res) => {
     const services = await getServiceStatus();
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(services));
+    return;
+  }
+  
+  if (path === '/api/tasks') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(cachedState?.tasks || {}));
+    return;
+  }
+  
+  if (path === '/api/telegram') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(cachedState?.telegram || {}));
     return;
   }
 

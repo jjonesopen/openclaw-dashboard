@@ -426,3 +426,60 @@ footer {
     grid-template-columns: 1fr;
   }
 }
+
+/* ── Task Section Styles ────────────────────────────────── */
+.task-section {
+  margin-bottom: 15px;
+}
+
+.task-section h4 {
+  margin: 0 0 8px 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-bright);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.task-section:last-child {
+  margin-bottom: 0;
+}
+
+/* ── Message Content Styles ────────────────────────────── */
+.message-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 11px;
+}
+
+.message-item:last-child {
+  border-bottom: none;
+}
+
+.message-content {
+  flex: 1;
+  color: var(--text-primary);
+  word-break: break-word;
+  margin-right: 10px;
+}
+
+.message-meta {
+  color: var(--text-dim);
+  white-space: nowrap;
+  font-size: 10px;
+}
+
+/* ── Panel Grid Adjustments ────────────────────────────── */
+#panel-active-tasks,
+#panel-telegram {
+  min-height: 200px;
+}
+
+#panel-active-tasks .panel-body,
+#panel-telegram .panel-body {
+  max-height: 300px;
+  overflow-y: auto;
+}

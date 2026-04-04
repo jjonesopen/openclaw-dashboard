@@ -102,6 +102,8 @@ function render(state) {
   renderMemory(state.gateway?.memory);
   renderLogs(state.gateway?.logs);
   renderWorkspace(state.gateway?.workspaceDirs);
+  renderActiveTasks(state.tasks);
+  renderTelegram(state.telegram);
 
   $('last-update').textContent = 'Last update: ' + new Date().toLocaleTimeString();
 }
@@ -392,4 +394,96 @@ function renderWorkspace(dirs) {
   }
 
   el.innerHTML = `<div class="dir-tags">${dirs.map(d => `<span class="dir-tag">📁 ${d}</span>`).join('')}</div>`;
+}
+
+// ── Active Tasks ─────────────────────────────────────────────
+function renderActiveTasks(tasks) {
+  const el = $('active-tasks-content');
+  if (!el || !tasks) return;
+
+  let html = '';
+
+  // Current tasks
+  if (tasks.current && tasks.current.length > 0) {
+    html += '<div class="task-section"><h4>🔄 Currently Running</h4>';
+    tasks.current.forEach(task => {
+      const duration = task.startTime ? formatDuration(Date.now() - task.startTime) : '';
+      const statusClass = task.status === 'running' ? 'green' : task.status === 'error' ? 'red' : 'yellow';
+      html += `
+        <div class="service-item">
+          <span class="service-name"><span class="dot ${statusClass}"></span>${task.description}</span>
+          <span class="service-meta">${task.status} ${duration ? '· ' + duration : ''}</span>
+        </div>
+      `;
+    });
+    html += '</div>';
+  }
+
+  // Recent work
+  if (tasks.recent && tasks.recent.length > 0) {
+    html += '<div class="task-section"><h4>📝 Recent Activity</h4>';
+    tasks.recent.forEach(work => {
+      html += `
+        <div class="file-item">
+          <span class="file-name">${work.description}</span>
+          <span class="file-meta">${formatTimeAgo(work.timestamp)}</span>
+        </div>
+      `;
+    });
+    html += '</div>';
+  }
+
+  el.innerHTML = html || '<span class="dim">No active tasks</span>';
+}
+
+// ── Telegram Messages ────────────────────────────────────────
+function renderTelegram(telegram) {
+  const el = $('telegram-content');
+  if (!el || !telegram) return;
+
+  if (!telegram.messages || telegram.messages.length === 0) {
+    el.innerHTML = '<span class="dim">No recent messages found</span>';
+    return;
+  }
+
+  let html = '';
+  telegram.messages.forEach(msg => {
+    const timeAgo = formatTimeAgo(new Date(msg.timestamp));
+    const source = msg.source === 'log' ? '📋' : '🧠';
+    const truncated = msg.content.length > 80 ? msg.content.substring(0, 80) + '...' : msg.content;
+    
+    html += `
+      <div class="file-item">
+        <span class="file-name">${source} ${truncated}</span>
+        <span class="file-meta">${timeAgo} · ${msg.file}</span>
+      </div>
+    `;
+  });
+
+  el.innerHTML = html;
+}
+
+// ── Helper Functions ─────────────────────────────────────────
+function formatDuration(ms) {
+  const seconds = Math.floor(ms / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  
+  if (hours > 0) return `${hours}h ${minutes % 60}m`;
+  if (minutes > 0) return `${minutes}m ${seconds % 60}s`;
+  return `${seconds}s`;
+}
+
+function formatTimeAgo(timestamp) {
+  const now = Date.now();
+  const ms = now - new Date(timestamp).getTime();
+  const seconds = Math.floor(ms / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+  
+  if (days > 0) return `${days}d ago`;
+  if (hours > 0) return `${hours}h ago`;
+  if (minutes > 0) return `${minutes}m ago`;
+  return 'just now';
 }
